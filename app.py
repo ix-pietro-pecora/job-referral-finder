@@ -1,4 +1,6 @@
 import os
+import csv
+import io
 import resend
 import posthog
 import streamlit as st
@@ -127,6 +129,12 @@ with st.form("subscribe_form"):
         height=140,
     )
 
+    linkedin_csv = st.file_uploader(
+        "Or upload your LinkedIn connections CSV (optional)",
+        type="csv",
+        help="From LinkedIn: Settings → Data Privacy → Get a copy of your data → Connections. We'll extract companies automatically.",
+    )
+
     background = st.text_input(
         "Your background (optional but recommended)",
         placeholder="e.g. B2B SaaS PM, 5 years total experience, 2 years in PM — no director or principal roles",
@@ -141,6 +149,32 @@ if submitted:
         for c in companies_raw.replace(",", "\n").splitlines()
         if c.strip()
     ]
+
+    # Parse LinkedIn CSV if uploaded
+    if linkedin_csv:
+        try:
+            content = linkedin_csv.read().decode("utf-8")
+            # LinkedIn CSV has a few header rows before the actual data
+            lines = content.splitlines()
+            # Find the header row containing "Company"
+            header_idx = next(
+                (i for i, l in enumerate(lines) if "Company" in l), None
+            )
+            if header_idx is not None:
+                reader = csv.DictReader(lines[header_idx:])
+                csv_companies = [
+                    row["Company"].strip()
+                    for row in reader
+                    if row.get("Company", "").strip()
+                ]
+                # Merge, preserving order, deduplicating case-insensitively
+                existing = {c.lower() for c in companies}
+                for c in csv_companies:
+                    if c.lower() not in existing:
+                        companies.append(c)
+                        existing.add(c.lower())
+        except Exception:
+            st.warning("Couldn't parse the CSV — continuing with manually entered companies.")
 
     if not email or not target_role or not companies:
         st.error("Please fill in all three fields before subscribing.")
