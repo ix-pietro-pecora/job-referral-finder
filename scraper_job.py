@@ -36,11 +36,14 @@ def scrape_companies(companies: list, target_role: str) -> tuple[list, list]:
         else:
             jobs = []
 
+        print(f"    [debug] {company} → {info} → {len(jobs)} jobs fetched")
         for job in jobs:
             job["company"] = company
         all_jobs.extend(jobs)
 
+    print(f"    [debug] total jobs before ranking: {len(all_jobs)}")
     matched = filter_and_rank(all_jobs, target_role)
+    print(f"    [debug] matched after ranking: {len(matched)}")
     return matched, unresolved
 
 
