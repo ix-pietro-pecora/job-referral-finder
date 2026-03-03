@@ -15,7 +15,7 @@ APP_URL = "https://friend-job-referral-finder.streamlit.app"
 posthog.project_api_key = "phc_oTCWVa0DfdJmWNfucavOE3YvbE0944DyjC5Yh7Ou9Uv"
 posthog.host = "https://us.i.posthog.com"
 
-st.set_page_config(page_title="Job Referral Finder", page_icon="🔍")
+st.set_page_config(page_title="Referral Radar", page_icon="📡")
 
 # Handle unsubscribe via query param
 params = st.query_params
@@ -66,7 +66,7 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
 
     html = f"""
     <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px">
-        <h2 style="margin-bottom:4px">You're subscribed to Job Referral Finder</h2>
+        <h2 style="margin-bottom:4px">You're subscribed to Referral Radar</h2>
         <p style="color:#6B7280;margin-top:0">
             We'll email you daily when new <strong>{target_role}</strong> roles open up at your watched companies.
         </p>
@@ -77,7 +77,7 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
         {unsupported_section}
         <hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0">
         <p style="color:#9CA3AF;font-size:12px">
-            Job Referral Finder · <a href="{APP_URL}?unsubscribe={email}" style="color:#9CA3AF">Unsubscribe</a>
+            Referral Radar · <a href="{APP_URL}?unsubscribe={email}" style="color:#9CA3AF">Unsubscribe</a>
         </p>
     </div>
     """
@@ -92,7 +92,7 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
         pass  # Don't block signup if confirmation email fails
 
 
-st.title("Job Referral Finder")
+st.title("Referral Radar")
 st.subheader("Know when to ask for a referral — before the window closes.")
 
 st.markdown("""

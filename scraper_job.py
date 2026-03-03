@@ -95,7 +95,7 @@ def build_email_html(target_role: str, jobs: list, unresolved: list, email: str 
       {rows}
       {unresolved_note}
       <hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0">
-      <p style="color:#9CA3AF;font-size:12px">Job Referral Finder · <a href="{APP_URL}?unsubscribe={email}" style="color:#9CA3AF">Unsubscribe</a></p>
+      <p style="color:#9CA3AF;font-size:12px">Referral Radar · <a href="{APP_URL}?unsubscribe={email}" style="color:#9CA3AF">Unsubscribe</a></p>
     </div>
     """
 
