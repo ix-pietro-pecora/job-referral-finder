@@ -40,3 +40,23 @@ def get_all_subscriptions() -> list:
 def unsubscribe(email: str) -> None:
     """Soft-delete a subscription by email."""
     _client().table("subscriptions").update({"active": False}).eq("email", email).execute()
+
+
+def get_sent_urls(email: str) -> set[str]:
+    """Return all job URLs already sent to this email."""
+    result = (
+        _client()
+        .table("sent_jobs")
+        .select("job_url")
+        .eq("email", email)
+        .execute()
+    )
+    return {row["job_url"] for row in result.data}
+
+
+def mark_jobs_sent(email: str, job_urls: list[str]) -> None:
+    """Record that these job URLs were sent to this email."""
+    if not job_urls:
+        return
+    rows = [{"email": email, "job_url": url} for url in job_urls]
+    _client().table("sent_jobs").upsert(rows, on_conflict="email,job_url").execute()

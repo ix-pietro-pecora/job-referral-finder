@@ -7,7 +7,7 @@ import os
 import resend
 from dotenv import load_dotenv
 
-from db import get_all_subscriptions
+from db import get_all_subscriptions, get_sent_urls, mark_jobs_sent
 from discovery.resolver import resolve
 from scrapers import greenhouse, lever, ashby
 from claude_client.ranker import filter_and_rank
@@ -93,20 +93,24 @@ def process_subscription(sub: dict) -> None:
 
     matched, unresolved = scrape_companies(companies, target_role)
 
-    if not matched:
-        print(f"  No matches found for {email} — skipping email.")
+    already_sent = get_sent_urls(email)
+    new_jobs = [j for j in matched if j["url"] not in already_sent]
+
+    if not new_jobs:
+        print(f"  No new matches for {email} — skipping email.")
         return
 
-    html = build_email_html(target_role, matched, unresolved, email)
+    html = build_email_html(target_role, new_jobs, unresolved, email)
 
     resend.Emails.send({
         "from": FROM_EMAIL,
         "to": email,
-        "subject": f"{len(matched)} new {target_role} role{'s' if len(matched) != 1 else ''} at your watched companies",
+        "subject": f"{len(new_jobs)} new {target_role} role{'s' if len(new_jobs) != 1 else ''} at your watched companies",
         "html": html,
     })
 
-    print(f"  ✓ Sent {len(matched)} matches to {email}")
+    mark_jobs_sent(email, [j["url"] for j in new_jobs])
+    print(f"  ✓ Sent {len(new_jobs)} new matches to {email}")
 
 
 def main() -> None:
