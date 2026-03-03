@@ -92,11 +92,25 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
         pass  # Don't block signup if confirmation email fails
 
 
-st.title("🔍 Job Referral Finder")
-st.caption(
-    "Get a daily email with open roles at companies where you have connections — "
-    "so you can ask for a referral at the right time."
-)
+st.title("Job Referral Finder")
+st.subheader("Know when to ask for a referral — before the window closes.")
+
+st.markdown("""
+Most people find out a role is open too late — after they've already cold applied,
+or after a friend mentions it in passing weeks later. By then the hiring manager
+already has a shortlist.
+
+**This tool fixes that.** Tell us the companies where you have connections and the
+role you're targeting. Every morning, you'll get an email with open roles at those
+specific companies — so you can reach out to your contact at exactly the right time
+and ask for a referral.
+
+**How it works:**
+- Enter your email, the role you're looking for, and the companies where you know people
+- We scan their job boards every night
+- You get a daily email with matching roles — only new ones, no repeats
+- Click a role, message your contact, ask for the referral
+""")
 
 st.divider()
 
