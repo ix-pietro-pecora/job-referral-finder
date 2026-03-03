@@ -112,8 +112,6 @@ with st.expander("Why referrals? Why now?"):
     - Click, message your contact, ask for the referral at exactly the right time
     """)
 
-st.divider()
-
 with st.form("subscribe_form"):
     email = st.text_input("Your email address")
 
