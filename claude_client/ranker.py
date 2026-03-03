@@ -17,6 +17,7 @@ def filter_and_rank(jobs: list[dict], target_role: str) -> list[dict]:
         j for j in jobs
         if any(kw in j["title"].lower() for kw in keywords)
     ] or jobs  # fall back to all jobs if pre-filter removes everything
+    candidates = candidates[:50]  # cap to avoid truncated responses
 
     # Build a compact job list for the prompt
     job_lines = []
@@ -42,7 +43,7 @@ Jobs:
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=1024,
+        max_tokens=4096,
         messages=[{"role": "user", "content": prompt}],
     )
 
