@@ -1,22 +1,9 @@
 {
   "stripe": { "ats": "greenhouse", "slug": "stripe" },
   "airbnb": { "ats": "greenhouse", "slug": "airbnb" },
-  "shopify": { "ats": "greenhouse", "slug": "shopify" },
   "figma": { "ats": "greenhouse", "slug": "figma" },
-  "notion": { "ats": "greenhouse", "slug": "notion" },
-  "rippling": { "ats": "greenhouse", "slug": "rippling" },
   "brex": { "ats": "greenhouse", "slug": "brex" },
-  "ramp": { "ats": "greenhouse", "slug": "ramp" },
   "discord": { "ats": "greenhouse", "slug": "discord" },
-  "doordash": { "ats": "greenhouse", "slug": "doordash" },
   "coinbase": { "ats": "greenhouse", "slug": "coinbase" },
-  "robinhood": { "ats": "greenhouse", "slug": "robinhood" },
-  "plaid": { "ats": "greenhouse", "slug": "plaid" },
-  "checkoutcom": { "ats": "greenhouse", "slug": "checkoutcom" },
-  "checkout": { "ats": "greenhouse", "slug": "checkoutcom" },
-  "vercel": { "ats": "lever", "slug": "vercel" },
-  "linear": { "ats": "lever", "slug": "linear" },
-  "mercury": { "ats": "lever", "slug": "mercury" },
-  "retool": { "ats": "lever", "slug": "retool" },
-  "airtable": { "ats": "lever", "slug": "airtable" }
+  "robinhood": { "ats": "greenhouse", "slug": "robinhood" }
 }
