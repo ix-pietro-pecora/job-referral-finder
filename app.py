@@ -93,8 +93,24 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
 
 
 st.markdown("## 📡 Referral Radar")
-st.caption("Know the moment a role opens at a company where you know someone.")
-st.caption("Enter your network once. We watch the job boards. You get an email when it's time to reach out.")
+st.markdown(
+    "You know people at great companies. "
+    "**Referral Radar tells you the moment a relevant role opens there** — "
+    "so you can ask for a referral before anyone else applies."
+)
+
+with st.expander("Why referrals? Why now?"):
+    st.markdown("""
+    Most people find out about a role too late — after the hiring manager already has a shortlist.
+    Cold applications get lost. Referrals get interviews.
+
+    The problem isn't finding jobs. It's knowing **when to activate your network.**
+
+    - Enter the companies where you have connections
+    - We scan their job boards every night
+    - You get an email the moment a matching role opens — no repeats, no noise
+    - Click, message your contact, ask for the referral at exactly the right time
+    """)
 
 st.divider()
 
