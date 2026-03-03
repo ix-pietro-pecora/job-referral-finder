@@ -93,22 +93,22 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
 
 
 st.title("📡 Referral Radar")
-st.subheader("You have warm connections. Know exactly when to activate them.")
+st.caption("You have warm connections. Know exactly when to activate them.")
 
-st.markdown("""
-You already know people at great companies. The problem is timing — by the time
-you hear a role is open, the hiring manager already has a shortlist. Cold applications
-get lost. Referrals get interviews.
+with st.expander("How it works"):
+    st.markdown("""
+    You already know people at great companies. The problem is timing — by the time
+    you hear a role is open, the hiring manager already has a shortlist. Cold applications
+    get lost. Referrals get interviews.
 
-**Referral Radar watches the job boards at your network's companies and tells you
-the moment a relevant role opens — so you always know when to reach out.**
+    Referral Radar watches the job boards at your network's companies and tells you
+    the moment a relevant role opens — so you always know when to reach out.
 
-**How it works:**
-- Enter the companies where you have connections and the role you're targeting
-- We scan their job boards every night
-- You get a daily email the moment a matching role opens — only new ones, no repeats
-- Click the role, message your contact, ask for the referral at exactly the right time
-""")
+    - Enter the companies where you have connections and the role you're targeting
+    - We scan their job boards every night
+    - You get a daily email the moment a matching role opens — only new ones, no repeats
+    - Click the role, message your contact, ask for the referral at exactly the right time
+    """)
 
 st.divider()
 
