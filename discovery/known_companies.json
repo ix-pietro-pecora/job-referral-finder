@@ -13,5 +13,14 @@
   "mercury": { "ats": "ashby", "slug": "mercury" },
   "retool": { "ats": "ashby", "slug": "retool" },
   "airtable": { "ats": "ashby", "slug": "airtable" },
-  "vercel": { "ats": "ashby", "slug": "vercel" }
+  "vercel": { "ats": "ashby", "slug": "vercel" },
+  "scaleai": { "ats": "greenhouse", "slug": "scaleai" },
+  "scale ai": { "ats": "greenhouse", "slug": "scaleai" },
+  "invoca": { "ats": "greenhouse", "slug": "invoca" },
+  "sofi": { "ats": "greenhouse", "slug": "sofi" },
+  "so fi": { "ats": "greenhouse", "slug": "sofi" },
+  "databricks": { "ats": "greenhouse", "slug": "databricks" },
+  "ridgeline": { "ats": "greenhouse", "slug": "ridgeline" },
+  "hingehealth": { "ats": "ashby", "slug": "hinge-health" },
+  "hinge health": { "ats": "ashby", "slug": "hinge-health" }
 }
