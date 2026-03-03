@@ -1,10 +1,10 @@
 # Job Referral Finder — MVP
 
 ## Problem
-Job seekers miss referral opportunities because they don't know when their connections' companies are hiring for their role. By the time they find out, the window to ask for a referral has often passed.
+Job seekers have warm connections they could activate, but no way to know when the timing is right to ask. By the time they hear a role is open, the hiring manager already has a shortlist.
 
 ## Product Vision
-"Set it and forget it referral radar." Enter your network once, it runs in the background, relevant roles surface in your inbox. Use it alongside LinkedIn — LinkedIn shows you what's open everywhere, this shows you what's open where you know someone.
+Referral Radar watches the job boards at your network's companies and tells you the moment a relevant role opens — so you always know when to reach out. Use it alongside LinkedIn — LinkedIn shows you what's open everywhere, this shows you what's open where you know someone, and when to act.
 
 ## North Star Outcome
 A job seeker lands more interviews because they asked for referrals at the right time, instead of cold applying.

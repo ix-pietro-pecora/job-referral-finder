@@ -92,24 +92,22 @@ def send_confirmation_email(email: str, target_role: str, supported: list, unsup
         pass  # Don't block signup if confirmation email fails
 
 
-st.title("Referral Radar")
-st.subheader("Know when to ask for a referral — before the window closes.")
+st.title("📡 Referral Radar")
+st.subheader("You have warm connections. Know exactly when to activate them.")
 
 st.markdown("""
-Most people find out a role is open too late — after they've already cold applied,
-or after a friend mentions it in passing weeks later. By then the hiring manager
-already has a shortlist.
+You already know people at great companies. The problem is timing — by the time
+you hear a role is open, the hiring manager already has a shortlist. Cold applications
+get lost. Referrals get interviews.
 
-**This tool fixes that.** Tell us the companies where you have connections and the
-role you're targeting. Every morning, you'll get an email with open roles at those
-specific companies — so you can reach out to your contact at exactly the right time
-and ask for a referral.
+**Referral Radar watches the job boards at your network's companies and tells you
+the moment a relevant role opens — so you always know when to reach out.**
 
 **How it works:**
-- Enter your email, the role you're looking for, and the companies where you know people
+- Enter the companies where you have connections and the role you're targeting
 - We scan their job boards every night
-- You get a daily email with matching roles — only new ones, no repeats
-- Click a role, message your contact, ask for the referral
+- You get a daily email the moment a matching role opens — only new ones, no repeats
+- Click the role, message your contact, ask for the referral at exactly the right time
 """)
 
 st.divider()
