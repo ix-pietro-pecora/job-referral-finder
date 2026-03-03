@@ -114,8 +114,6 @@ with st.expander("Why referrals? Why now?"):
 
 st.divider()
 
-st.divider()
-
 with st.form("subscribe_form"):
     email = st.text_input("Your email address")
 
