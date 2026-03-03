@@ -1,111 +1,58 @@
 import os
 import streamlit as st
 from dotenv import load_dotenv
-
-from discovery.resolver import resolve
-from scrapers import greenhouse, lever
-from claude_client.ranker import filter_and_rank, score_with_resume
-from utils.resume_parser import extract_text
+from db import add_subscription
 
 load_dotenv()
 
-st.set_page_config(page_title="Job Referral Finder", page_icon="🔍", layout="wide")
+st.set_page_config(page_title="Job Referral Finder", page_icon="🔍")
 
 st.title("🔍 Job Referral Finder")
-st.caption("Find open roles at companies where you have connections — so you can ask for a referral.")
+st.caption(
+    "Get a daily email with open roles at companies where you have connections — "
+    "so you can ask for a referral at the right time."
+)
 
-# ── Inputs ────────────────────────────────────────────────────────────────────
+st.divider()
 
-col1, col2 = st.columns(2)
+with st.form("subscribe_form"):
+    email = st.text_input("Your email address")
 
-with col1:
     target_role = st.text_input(
-        "What role are you targeting?",
+        "What role are you looking for?",
         placeholder="e.g. Product Manager, Software Engineer, Designer",
     )
 
-with col2:
-    companies_input = st.text_input(
-        "Which companies do you want to check?",
-        placeholder="e.g. Stripe, Airbnb, Notion, Vercel",
+    companies_raw = st.text_area(
+        "Companies to watch",
+        placeholder="Stripe\nAirbnb\nNotion\nVercel",
+        help="One company per line, or comma-separated.",
+        height=140,
     )
 
-resume_file = st.file_uploader(
-    "Upload your resume (optional — enables personalized match scores)",
-    type=["pdf"],
-)
+    submitted = st.form_submit_button("Subscribe — send me daily job alerts →", type="primary")
 
-search = st.button("Find Roles", type="primary", disabled=not (target_role and companies_input))
+if submitted:
+    companies = [
+        c.strip()
+        for c in companies_raw.replace(",", "\n").splitlines()
+        if c.strip()
+    ]
 
-# ── Search ────────────────────────────────────────────────────────────────────
-
-if search:
-    company_names = [c.strip() for c in companies_input.split(",") if c.strip()]
-    resume_text = ""
-
-    if resume_file:
-        resume_text = extract_text(resume_file.read())
-
-    all_jobs = []
-    unresolved = []
-
-    progress = st.progress(0, text="Looking up job boards...")
-
-    for i, company in enumerate(company_names):
-        progress.progress((i) / len(company_names), text=f"Checking {company}...")
-        info = resolve(company)
-
-        if info is None:
-            unresolved.append(company)
-            continue
-
-        if info["ats"] == "greenhouse":
-            jobs = greenhouse.fetch_jobs(info["slug"])
-        elif info["ats"] == "lever":
-            jobs = lever.fetch_jobs(info["slug"])
-        else:
-            jobs = []
-
-        for job in jobs:
-            job["company"] = company
-
-        all_jobs.extend(jobs)
-
-    progress.progress(1.0, text="Asking Claude to filter matches...")
-
-    matched = filter_and_rank(all_jobs, target_role)
-
-    if resume_text and matched:
-        matched = score_with_resume(matched, resume_text)
-
-    progress.empty()
-
-    # ── Results ───────────────────────────────────────────────────────────────
-
-    if unresolved:
-        st.warning(
-            f"Couldn't find job boards for: **{', '.join(unresolved)}**. "
-            "Try checking their careers page manually or add them to `known_companies.json`."
-        )
-
-    if not matched:
-        st.info("No matching roles found. Try broadening your role description or adding more companies.")
+    if not email or not target_role or not companies:
+        st.error("Please fill in all three fields before subscribing.")
+    elif "@" not in email:
+        st.error("Please enter a valid email address.")
     else:
-        st.success(f"Found **{len(matched)} matching role{'s' if len(matched) != 1 else ''}** across {len(company_names) - len(unresolved)} companies.")
+        try:
+            add_subscription(email, companies, target_role)
+            st.success(
+                f"You're subscribed! We'll email **{email}** daily with "
+                f"**{target_role}** roles at: {', '.join(companies)}."
+            )
+            st.info("It can take up to 24 hours for your first email — we run the job search every night.")
+        except Exception as e:
+            st.error(f"Something went wrong: {e}")
 
-        for job in matched:
-            with st.expander(f"**{job['company'].title()}** — {job['title']}  |  {job.get('location', 'Location N/A')}"):
-                if resume_text and "match_score" in job:
-                    score = job["match_score"]
-                    color = "green" if score >= 70 else "orange" if score >= 40 else "red"
-                    st.markdown(f"**Resume match: :{color}[{score}/100]** — {job.get('score_reason', '')}")
-
-                    if job.get("talking_points"):
-                        st.markdown("**Highlight in your referral ask:**")
-                        for point in job["talking_points"]:
-                            st.markdown(f"- {point}")
-
-                elif job.get("match_note"):
-                    st.markdown(f"_{job['match_note']}_")
-
-                st.markdown(f"[View job posting →]({job['url']})")
+st.divider()
+st.caption("Built with Claude AI · [Unsubscribe](mailto:unsubscribe@yourdomain.com)")
