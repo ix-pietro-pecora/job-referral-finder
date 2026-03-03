@@ -3,6 +3,9 @@
 ## Problem
 Job seekers miss referral opportunities because they don't know when their connections' companies are hiring for their role. By the time they find out, the window to ask for a referral has often passed.
 
+## Product Vision
+"Set it and forget it referral radar." Enter your network once, it runs in the background, relevant roles surface in your inbox. Use it alongside LinkedIn — LinkedIn shows you what's open everywhere, this shows you what's open where you know someone.
+
 ## North Star Outcome
 A job seeker lands more interviews because they asked for referrals at the right time, instead of cold applying.
 
