@@ -11,13 +11,13 @@ def _client() -> Client:
     return create_client(url, key)
 
 
-def add_subscription(email: str, companies: list, target_role: str) -> dict:
+def add_subscription(email: str, companies: list, target_role: str, background: str = "") -> dict:
     """Add or update a subscription. Upserts on email."""
     result = (
         _client()
         .table("subscriptions")
         .upsert(
-            {"email": email, "companies": companies, "target_role": target_role, "active": True},
+            {"email": email, "companies": companies, "target_role": target_role, "background": background, "active": True},
             on_conflict="email",
         )
         .execute()

@@ -93,6 +93,12 @@ with st.form("subscribe_form"):
         height=140,
     )
 
+    background = st.text_input(
+        "Your background (optional but recommended)",
+        placeholder="e.g. B2B SaaS PM, 5 years total experience, 2 years in PM — no director or principal roles",
+        help="Helps us filter out roles you're over or under-qualified for.",
+    )
+
     submitted = st.form_submit_button("Subscribe — send me daily job alerts →", type="primary")
 
 if submitted:
@@ -108,7 +114,7 @@ if submitted:
         st.error("Please enter a valid email address.")
     else:
         try:
-            add_subscription(email, companies, target_role)
+            add_subscription(email, companies, target_role, background)
             st.success(
                 f"You're subscribed! We'll email **{email}** daily with "
                 f"**{target_role}** roles."

@@ -3,7 +3,7 @@ import anthropic
 client = anthropic.Anthropic()
 
 
-def filter_and_rank(jobs: list[dict], target_role: str) -> list[dict]:
+def filter_and_rank(jobs: list[dict], target_role: str, background: str = "") -> list[dict]:
     """
     Use Claude to filter jobs relevant to target_role and return them ranked
     with a short match note. Returns a subset of the input jobs list.
@@ -27,11 +27,14 @@ def filter_and_rank(jobs: list[dict], target_role: str) -> list[dict]:
             f"[{i}] {job['title']} | {job['location']}\n{desc_preview}"
         )
 
+    background_line = f"\nCandidate background: {background}" if background else ""
+
     prompt = f"""You are helping a job seeker find relevant roles.
 
-Target role: "{target_role}"
+Target role: "{target_role}"{background_line}
 
 Below are job postings. Return ONLY the ones genuinely relevant to the target role.
+If a candidate background is provided, filter out roles that are too senior, too junior, or clearly mismatched in seniority or experience level.
 For each match, respond with a JSON array of objects with these fields:
 - index: the [number] from the input
 - match_note: one sentence on why this role fits (max 15 words)

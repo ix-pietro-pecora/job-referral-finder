@@ -18,7 +18,7 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 
 
-def scrape_companies(companies: list, target_role: str) -> tuple[list, list]:
+def scrape_companies(companies: list, target_role: str, background: str = "") -> tuple[list, list]:
     """Return (matched_jobs, unresolved_companies)."""
     all_jobs = []
     unresolved = []
@@ -42,7 +42,7 @@ def scrape_companies(companies: list, target_role: str) -> tuple[list, list]:
             job["company"] = company
         all_jobs.extend(jobs)
 
-    matched = filter_and_rank(all_jobs, target_role)
+    matched = filter_and_rank(all_jobs, target_role, background)
     return matched, unresolved
 
 
@@ -91,7 +91,8 @@ def process_subscription(sub: dict) -> None:
 
     print(f"  Processing {email} — {target_role} at {companies}")
 
-    matched, unresolved = scrape_companies(companies, target_role)
+    background = sub.get("background", "")
+    matched, unresolved = scrape_companies(companies, target_role, background)
 
     already_sent = get_sent_urls(email)
     new_jobs = [j for j in matched if j["url"] not in already_sent]
