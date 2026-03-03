@@ -5,5 +5,13 @@
   "brex": { "ats": "greenhouse", "slug": "brex" },
   "discord": { "ats": "greenhouse", "slug": "discord" },
   "coinbase": { "ats": "greenhouse", "slug": "coinbase" },
-  "robinhood": { "ats": "greenhouse", "slug": "robinhood" }
+  "robinhood": { "ats": "greenhouse", "slug": "robinhood" },
+  "notion": { "ats": "ashby", "slug": "notion" },
+  "linear": { "ats": "ashby", "slug": "linear" },
+  "ramp": { "ats": "ashby", "slug": "ramp" },
+  "plaid": { "ats": "ashby", "slug": "plaid" },
+  "mercury": { "ats": "ashby", "slug": "mercury" },
+  "retool": { "ats": "ashby", "slug": "retool" },
+  "airtable": { "ats": "ashby", "slug": "airtable" },
+  "vercel": { "ats": "ashby", "slug": "vercel" }
 }

@@ -33,10 +33,19 @@ def _probe_lever(slug: str) -> bool:
         return False
 
 
+def _probe_ashby(slug: str) -> bool:
+    url = f"https://api.ashbyhq.com/posting-api/job-board/{slug}"
+    try:
+        r = requests.get(url, timeout=5)
+        return r.status_code == 200
+    except requests.RequestException:
+        return False
+
+
 def resolve(company_name: str) -> dict | None:
     """
     Given a company name, return its ATS info.
-    Returns: {"ats": "greenhouse"|"lever", "slug": str} or None if unresolvable.
+    Returns: {"ats": "greenhouse"|"lever"|"ashby", "slug": str} or None if unresolvable.
     """
     slug = _normalize(company_name)
 
@@ -49,5 +58,7 @@ def resolve(company_name: str) -> dict | None:
         return {"ats": "greenhouse", "slug": slug}
     if _probe_lever(slug):
         return {"ats": "lever", "slug": slug}
+    if _probe_ashby(slug):
+        return {"ats": "ashby", "slug": slug}
 
     return None

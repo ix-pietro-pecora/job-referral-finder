@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from db import get_all_subscriptions
 from discovery.resolver import resolve
-from scrapers import greenhouse, lever
+from scrapers import greenhouse, lever, ashby
 from claude_client.ranker import filter_and_rank
 
 load_dotenv()
@@ -33,6 +33,8 @@ def scrape_companies(companies: list, target_role: str) -> tuple[list, list]:
             jobs = greenhouse.fetch_jobs(info["slug"])
         elif info["ats"] == "lever":
             jobs = lever.fetch_jobs(info["slug"])
+        elif info["ats"] == "ashby":
+            jobs = ashby.fetch_jobs(info["slug"])
         else:
             jobs = []
 
