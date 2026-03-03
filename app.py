@@ -1,11 +1,22 @@
 import os
 import streamlit as st
 from dotenv import load_dotenv
-from db import add_subscription
+from db import add_subscription, unsubscribe
 
 load_dotenv()
 
 st.set_page_config(page_title="Job Referral Finder", page_icon="🔍")
+
+# Handle unsubscribe via query param
+params = st.query_params
+if "unsubscribe" in params:
+    email = params["unsubscribe"]
+    try:
+        unsubscribe(email)
+        st.success(f"You've been unsubscribed. You won't receive any more emails at {email}.")
+    except Exception as e:
+        st.error(f"Something went wrong: {e}")
+    st.stop()
 
 st.title("🔍 Job Referral Finder")
 st.caption(

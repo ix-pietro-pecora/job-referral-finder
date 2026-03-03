@@ -46,7 +46,10 @@ def scrape_companies(companies: list, target_role: str) -> tuple[list, list]:
     return matched, unresolved
 
 
-def build_email_html(target_role: str, jobs: list, unresolved: list) -> str:
+APP_URL = "https://friend-job-referral-finder.streamlit.app"
+
+
+def build_email_html(target_role: str, jobs: list, unresolved: list, email: str = "") -> str:
     rows = ""
     for job in jobs:
         note = f"<br><span style='color:#6B7280;font-size:13px'>{job['match_note']}</span>" if job.get("match_note") else ""
@@ -76,7 +79,7 @@ def build_email_html(target_role: str, jobs: list, unresolved: list) -> str:
       {rows}
       {unresolved_note}
       <hr style="border:none;border-top:1px solid #E5E7EB;margin:24px 0">
-      <p style="color:#9CA3AF;font-size:12px">Job Referral Finder · You're receiving this because you subscribed.</p>
+      <p style="color:#9CA3AF;font-size:12px">Job Referral Finder · <a href="{APP_URL}?unsubscribe={email}" style="color:#9CA3AF">Unsubscribe</a></p>
     </div>
     """
 
@@ -94,7 +97,7 @@ def process_subscription(sub: dict) -> None:
         print(f"  No matches found for {email} — skipping email.")
         return
 
-    html = build_email_html(target_role, matched, unresolved)
+    html = build_email_html(target_role, matched, unresolved, email)
 
     resend.Emails.send({
         "from": FROM_EMAIL,
