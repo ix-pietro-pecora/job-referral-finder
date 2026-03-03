@@ -46,9 +46,12 @@ Jobs:
         messages=[{"role": "user", "content": prompt}],
     )
 
-    import json
+    import json, re
     try:
         raw = message.content[0].text.strip()
+        # Strip markdown code fences if present
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
         matches = json.loads(raw)
     except (json.JSONDecodeError, IndexError):
         return []
