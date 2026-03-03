@@ -5,6 +5,8 @@ Fetches jobs for every active subscription and sends a digest email via Resend.
 from __future__ import annotations
 import os
 import resend
+import posthog
+from urllib.parse import urlencode, quote_plus
 from dotenv import load_dotenv
 
 from db import get_all_subscriptions, get_sent_urls, mark_jobs_sent
@@ -16,6 +18,9 @@ load_dotenv()
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
+
+posthog.project_api_key = "phc_oTCWVa0DfdJmWNfucavOE3YvbE0944DyjC5Yh7Ou9Uv"
+posthog.host = "https://us.i.posthog.com"
 
 
 def scrape_companies(companies: list, target_role: str, background: str = "") -> tuple[list, list]:
@@ -49,17 +54,28 @@ def scrape_companies(companies: list, target_role: str, background: str = "") ->
 APP_URL = "https://friend-job-referral-finder.streamlit.app"
 
 
+def _tracked_url(job_url: str, email: str, job_title: str, company: str) -> str:
+    params = urlencode({
+        "r": job_url,
+        "email": email,
+        "job": job_title,
+        "company": company,
+    })
+    return f"{APP_URL}?{params}"
+
+
 def build_email_html(target_role: str, jobs: list, unresolved: list, email: str = "") -> str:
     rows = ""
     for job in jobs:
         note = f"<br><span style='color:#6B7280;font-size:13px'>{job['match_note']}</span>" if job.get("match_note") else ""
         location = f" · {job['location']}" if job.get("location") else ""
+        click_url = _tracked_url(job["url"], email, job["title"], job.get("company", ""))
         rows += f"""
         <div style="margin-bottom:20px;padding:14px 16px;border-left:3px solid #4F46E5;background:#F9FAFB;border-radius:4px">
           <div style="font-weight:600">{job['company'].title()} — {job['title']}</div>
           <div style="color:#6B7280;font-size:13px;margin:2px 0">{location}</div>
           {note}
-          <a href="{job['url']}" style="display:inline-block;margin-top:8px;color:#4F46E5;font-size:13px">View job →</a>
+          <a href="{click_url}" style="display:inline-block;margin-top:8px;color:#4F46E5;font-size:13px">View job →</a>
         </div>
         """
 
@@ -111,6 +127,14 @@ def process_subscription(sub: dict) -> None:
     })
 
     mark_jobs_sent(email, [j["url"] for j in new_jobs])
+    try:
+        posthog.capture(email, "email_sent", {
+            "target_role": target_role,
+            "job_count": len(new_jobs),
+            "companies": companies,
+        })
+    except Exception:
+        pass
     print(f"  ✓ Sent {len(new_jobs)} new matches to {email}")
 
 

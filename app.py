@@ -1,5 +1,6 @@
 import os
 import resend
+import posthog
 import streamlit as st
 from dotenv import load_dotenv
 from db import add_subscription, unsubscribe
@@ -10,6 +11,9 @@ load_dotenv()
 resend.api_key = os.getenv("RESEND_API_KEY")
 FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 APP_URL = "https://friend-job-referral-finder.streamlit.app"
+
+posthog.project_api_key = "phc_oTCWVa0DfdJmWNfucavOE3YvbE0944DyjC5Yh7Ou9Uv"
+posthog.host = "https://us.i.posthog.com"
 
 st.set_page_config(page_title="Job Referral Finder", page_icon="🔍")
 
@@ -22,6 +26,24 @@ if "unsubscribe" in params:
         st.success(f"You've been unsubscribed. You won't receive any more emails at {email}.")
     except Exception as e:
         st.error(f"Something went wrong: {e}")
+    st.stop()
+
+# Handle job click tracking + redirect
+if "r" in params:
+    job_url = params["r"]
+    email = params.get("email", "anonymous")
+    job_title = params.get("job", "")
+    company = params.get("company", "")
+    try:
+        posthog.capture(email, "job_clicked", {
+            "job_url": job_url,
+            "job_title": job_title,
+            "company": company,
+        })
+    except Exception:
+        pass
+    st.markdown(f"Taking you to the job posting... [Click here if you're not redirected]({job_url})")
+    st.markdown(f'<meta http-equiv="refresh" content="0; url={job_url}">', unsafe_allow_html=True)
     st.stop()
 
 
