@@ -4,6 +4,7 @@ Fetches jobs for every active subscription and sends a digest email via Resend.
 """
 from __future__ import annotations
 import os
+import re
 import resend
 import posthog
 from urllib.parse import urlencode, quote_plus
@@ -46,6 +47,17 @@ def scrape_companies(companies: list, target_role: str, background: str = "") ->
         for job in jobs:
             job["company"] = company
         all_jobs.extend(jobs)
+
+    for c in unresolved:
+        try:
+            posthog.capture("system", "unsupported_company_requested", {
+                "company": c,
+                "normalized_slug": re.sub(r"[^a-z0-9]", "", c.lower()),
+                "reason": "No matching job board found on Greenhouse, Lever, or Ashby",
+                "source": "nightly_scraper",
+            })
+        except Exception:
+            pass
 
     matched = filter_and_rank(all_jobs, target_role, background)
     return matched, unresolved

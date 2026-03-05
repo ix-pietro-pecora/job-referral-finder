@@ -1,6 +1,7 @@
 import os
 import csv
 import io
+import re
 import resend
 import posthog
 import streamlit as st
@@ -204,6 +205,16 @@ if submitted:
                     st.markdown(f"✓ &nbsp; {c}")
 
             if unsupported:
+                for c in unsupported:
+                    try:
+                        posthog.capture(email, "unsupported_company_requested", {
+                            "company": c,
+                            "normalized_slug": re.sub(r"[^a-z0-9]", "", c.lower()),
+                            "reason": "No matching job board found on Greenhouse, Lever, or Ashby",
+                        })
+                    except Exception:
+                        pass
+
                 st.markdown("**Couldn't find a job board for:**")
                 for c in unsupported:
                     st.markdown(f"✗ &nbsp; {c}")
