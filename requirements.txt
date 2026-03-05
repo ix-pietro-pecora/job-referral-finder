@@ -6,3 +6,5 @@ python-dotenv>=1.0.0
 supabase>=2.3.0
 resend>=0.8.0
 posthog>=3.0.0
+pytest>=8.0.0
+responses>=0.25.0

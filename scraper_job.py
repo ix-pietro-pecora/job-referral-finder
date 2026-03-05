@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 from db import get_all_subscriptions, get_sent_urls, mark_jobs_sent
 from discovery.resolver import resolve
-from scrapers import greenhouse, lever, ashby
+from scrapers import greenhouse, lever, ashby, gem, workable, smartrecruiters, workday
 from claude_client.ranker import filter_and_rank
 
 load_dotenv()
@@ -41,6 +41,18 @@ def scrape_companies(companies: list, target_role: str, background: str = "") ->
             jobs = lever.fetch_jobs(info["slug"])
         elif info["ats"] == "ashby":
             jobs = ashby.fetch_jobs(info["slug"])
+        elif info["ats"] == "gem":
+            jobs = gem.fetch_jobs(info["slug"])
+        elif info["ats"] == "workable":
+            jobs = workable.fetch_jobs(info["slug"])
+        elif info["ats"] == "smartrecruiters":
+            jobs = smartrecruiters.fetch_jobs(info["slug"])
+        elif info["ats"] == "workday":
+            jobs = workday.fetch_jobs(
+                info["slug"],
+                base_url=info.get("base_url", ""),
+                board_name=info.get("board_name", ""),
+            )
         else:
             jobs = []
 

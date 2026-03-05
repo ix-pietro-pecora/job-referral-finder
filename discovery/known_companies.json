@@ -24,5 +24,10 @@
   "hingehealth": { "ats": "ashby", "slug": "hinge-health" },
   "hinge health": { "ats": "ashby", "slug": "hinge-health" },
   "factoryai": { "ats": "ashby", "slug": "factory" },
-  "factory ai": { "ats": "ashby", "slug": "factory" }
+  "factory ai": { "ats": "ashby", "slug": "factory" },
+  "netflix": { "ats": "workday", "slug": "netflix", "base_url": "https://netflix.wd1.myworkdayjobs.com", "board_name": "Netflix" },
+  "salesforce": { "ats": "workday", "slug": "salesforce", "base_url": "https://salesforce.wd12.myworkdayjobs.com", "board_name": "External_Career_Site" },
+  "nike": { "ats": "workday", "slug": "nike", "base_url": "https://nike.wd1.myworkdayjobs.com", "board_name": "Nike_Careers" },
+  "disney": { "ats": "workday", "slug": "disney", "base_url": "https://disney.wd5.myworkdayjobs.com", "board_name": "disneycareer" },
+  "visa": { "ats": "smartrecruiters", "slug": "Visa" }
 }
