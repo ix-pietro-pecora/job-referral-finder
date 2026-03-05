@@ -115,34 +115,59 @@ with st.expander("Why referrals? Why now?"):
     - Click, message your contact, ask for the referral at exactly the right time
     """)
 
-with st.form("subscribe_form"):
-    email = st.text_input("Your email address")
+# --- Step 1: Email & Role ---
 
-    target_role = st.text_input(
-        "What role are you looking for?",
-        placeholder="e.g. Product Manager, Software Engineer, Designer",
-    )
+st.markdown("#### 1. About you")
 
+email = st.text_input("Your email address")
+
+target_role = st.text_input(
+    "What role are you looking for?",
+    placeholder="e.g. Product Manager, Software Engineer, Designer",
+)
+
+background = st.text_input(
+    "Your background (optional but recommended)",
+    placeholder="e.g. B2B SaaS PM, 5 years total experience, 2 years in PM — no director or principal roles",
+    help="Helps us filter out roles you're over or under-qualified for.",
+)
+
+# --- Step 2: Two paths for companies ---
+
+st.markdown("#### 2. Which companies should we watch?")
+st.markdown(
+    "Pick the option that works best for you. "
+    "LinkedIn doesn't let us access your connections directly, "
+    "but you can export them as a CSV."
+)
+
+tab_manual, tab_linkedin = st.tabs(["✍️ Type company names", "📄 Upload LinkedIn CSV"])
+
+with tab_manual:
     companies_raw = st.text_area(
         "Companies to watch",
         placeholder="Stripe\nAirbnb\nNotion\nVercel",
         help="One company per line, or comma-separated.",
         height=140,
+        label_visibility="collapsed",
     )
 
+with tab_linkedin:
+    st.markdown(
+        "**How to get your CSV:**  \n"
+        "1. Go to [LinkedIn Data Export](https://www.linkedin.com/mypreferences/d/download-my-data)  \n"
+        "2. Select **Connections** and request the download  \n"
+        "3. You'll get an email with a CSV file — upload it below"
+    )
     linkedin_csv = st.file_uploader(
-        "Or upload your LinkedIn connections CSV (optional)",
+        "Upload Connections.csv",
         type="csv",
-        help="From LinkedIn: Settings → Data Privacy → Get a copy of your data → Connections. We'll extract companies automatically.",
+        label_visibility="collapsed",
     )
 
-    background = st.text_input(
-        "Your background (optional but recommended)",
-        placeholder="e.g. B2B SaaS PM, 5 years total experience, 2 years in PM — no director or principal roles",
-        help="Helps us filter out roles you're over or under-qualified for.",
-    )
+# --- Subscribe ---
 
-    submitted = st.form_submit_button("Subscribe — send me daily job alerts →", type="primary")
+submitted = st.button("Subscribe — send me daily job alerts →", type="primary", use_container_width=True)
 
 if submitted:
     companies = [
@@ -151,13 +176,10 @@ if submitted:
         if c.strip()
     ]
 
-    # Parse LinkedIn CSV if uploaded
     if linkedin_csv:
         try:
             content = linkedin_csv.read().decode("utf-8")
-            # LinkedIn CSV has a few header rows before the actual data
             lines = content.splitlines()
-            # Find the header row containing "Company"
             header_idx = next(
                 (i for i, l in enumerate(lines) if "Company" in l), None
             )
@@ -168,7 +190,6 @@ if submitted:
                     for row in reader
                     if row.get("Company", "").strip()
                 ]
-                # Merge, preserving order, deduplicating case-insensitively
                 existing = {c.lower() for c in companies}
                 for c in csv_companies:
                     if c.lower() not in existing:
@@ -178,7 +199,7 @@ if submitted:
             st.warning("Couldn't parse the CSV — continuing with manually entered companies.")
 
     if not email or not target_role or not companies:
-        st.error("Please fill in all three fields before subscribing.")
+        st.error("Please fill in your email, target role, and at least one company.")
     elif "@" not in email:
         st.error("Please enter a valid email address.")
     else:
@@ -189,7 +210,6 @@ if submitted:
                 f"**{target_role}** roles."
             )
 
-            # Resolve each company and show coverage
             with st.spinner("Checking which companies we can monitor..."):
                 supported = []
                 unsupported = []
@@ -210,7 +230,7 @@ if submitted:
                         posthog.capture(email, "unsupported_company_requested", {
                             "company": c,
                             "normalized_slug": re.sub(r"[^a-z0-9]", "", c.lower()),
-                            "reason": "No matching job board found on Greenhouse, Lever, or Ashby",
+                            "reason": "No matching job board found on supported ATS platforms",
                         })
                     except Exception:
                         pass
@@ -219,7 +239,7 @@ if submitted:
                 for c in unsupported:
                     st.markdown(f"✗ &nbsp; {c}")
                 st.warning(
-                    "These companies may use Workday or a custom job board we don't support yet. "
+                    "These companies may use a job board we don't support yet. "
                     "You won't receive alerts for them."
                 )
 
