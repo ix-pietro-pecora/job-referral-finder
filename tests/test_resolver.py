@@ -1,6 +1,6 @@
 import responses
 from unittest.mock import patch
-from discovery.resolver import _normalize, resolve, KNOWN_COMPANIES
+from discovery.resolver import _normalize, _slug_variants, resolve, KNOWN_COMPANIES
 
 
 class TestNormalize:
@@ -18,6 +18,26 @@ class TestNormalize:
 
     def test_empty_string(self):
         assert _normalize("") == ""
+
+
+class TestSlugVariants:
+    def test_strips_ai_suffix(self):
+        assert _slug_variants("factoryai") == ["factoryai", "factory"]
+
+    def test_strips_inc_suffix(self):
+        assert _slug_variants("stripeinc") == ["stripeinc", "stripe"]
+
+    def test_strips_labs_suffix(self):
+        assert _slug_variants("openlabs") == ["openlabs", "open"]
+
+    def test_strips_hq_suffix(self):
+        assert _slug_variants("linearhq") == ["linearhq", "linear"]
+
+    def test_no_suffix_unchanged(self):
+        assert _slug_variants("stripe") == ["stripe"]
+
+    def test_does_not_strip_to_empty(self):
+        assert _slug_variants("ai") == ["ai"]
 
 
 class TestResolveKnownCompanies:
@@ -39,6 +59,25 @@ class TestResolveKnownCompanies:
 
 
 class TestResolveProbing:
+    @responses.activate
+    def test_probe_with_suffix_stripping(self):
+        """'Factory AI' normalizes to 'factoryai', which 404s, but 'factory' succeeds."""
+        responses.add(responses.GET, "https://boards-api.greenhouse.io/v1/boards/factoryai/jobs", status=404)
+        responses.add(responses.GET, "https://api.lever.co/v0/postings/factoryai", status=404)
+        responses.add(responses.GET, "https://api.ashbyhq.com/posting-api/job-board/factoryai", status=404)
+        responses.add(responses.GET, "https://api.gem.com/job_board/v0/factoryai/job_posts/", status=404)
+        responses.add(responses.POST, "https://apply.workable.com/api/v3/accounts/factoryai/jobs", json={"total": 0, "results": []}, status=200)
+        responses.add(responses.GET, "https://api.smartrecruiters.com/v1/companies/factoryai/postings", status=404)
+        # factory (suffix-stripped) hits on Ashby
+        responses.add(responses.GET, "https://boards-api.greenhouse.io/v1/boards/factory/jobs", status=404)
+        responses.add(responses.GET, "https://api.lever.co/v0/postings/factory", status=404)
+        responses.add(responses.GET, "https://api.ashbyhq.com/posting-api/job-board/factory", json={"jobs": []}, status=200)
+        # Note: known_companies.json already has "factoryai", so this test uses a mock
+        # to bypass that. We test the probing path directly.
+        with patch.dict("discovery.resolver.KNOWN_COMPANIES", {}, clear=True):
+            result = resolve("Factory AI")
+        assert result == {"ats": "ashby", "slug": "factory"}
+
     @responses.activate
     def test_probe_greenhouse_success(self):
         responses.add(

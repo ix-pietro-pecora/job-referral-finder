@@ -11,9 +11,23 @@ with open(KNOWN_COMPANIES_PATH) as f:
     KNOWN_COMPANIES = json.load(f)
 
 
+COMMON_SUFFIXES = re.compile(
+    r"(ai|inc|co|corp|ltd|llc|hq|io|app|labs|tech|software|global|group|com)$"
+)
+
+
 def _normalize(name: str) -> str:
     """Lowercase, strip punctuation and spaces."""
     return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def _slug_variants(slug: str) -> list[str]:
+    """Return the slug plus versions with common suffixes stripped."""
+    variants = [slug]
+    stripped = COMMON_SUFFIXES.sub("", slug)
+    if stripped and stripped != slug:
+        variants.append(stripped)
+    return variants
 
 
 def _probe_greenhouse(slug: str) -> bool:
@@ -132,22 +146,23 @@ def resolve(company_name: str) -> dict | None:
     if slug in KNOWN_COMPANIES:
         return KNOWN_COMPANIES[slug]
 
-    # Tier 2: API probe
-    if _probe_greenhouse(slug):
-        return {"ats": "greenhouse", "slug": slug}
-    if _probe_lever(slug):
-        return {"ats": "lever", "slug": slug}
-    if _probe_ashby(slug):
-        return {"ats": "ashby", "slug": slug}
-    if _probe_gem(slug):
-        return {"ats": "gem", "slug": slug}
-    if _probe_workable(slug):
-        return {"ats": "workable", "slug": slug}
-    if _probe_smartrecruiters(slug):
-        return {"ats": "smartrecruiters", "slug": slug}
+    # Tier 2: API probe — try the full slug, then suffix-stripped variants
+    for variant in _slug_variants(slug):
+        if _probe_greenhouse(variant):
+            return {"ats": "greenhouse", "slug": variant}
+        if _probe_lever(variant):
+            return {"ats": "lever", "slug": variant}
+        if _probe_ashby(variant):
+            return {"ats": "ashby", "slug": variant}
+        if _probe_gem(variant):
+            return {"ats": "gem", "slug": variant}
+        if _probe_workable(variant):
+            return {"ats": "workable", "slug": variant}
+        if _probe_smartrecruiters(variant):
+            return {"ats": "smartrecruiters", "slug": variant}
 
-    workday_result = _probe_workday(slug)
-    if workday_result:
-        return workday_result
+        workday_result = _probe_workday(variant)
+        if workday_result:
+            return workday_result
 
     return None
